@@ -101,6 +101,20 @@
       position: relative;
       z-index: 1;
     }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -116,81 +130,19 @@
 
 <label for="painelSelect">Selecione o Painel:</label>
 <select id="painelSelect">
-  <!-- Opções serão preenchidas pelo JS -->
+  <option value="" disabled selected>Carregando...</option>
 </select>
 
-<div id="atasContainer"></div>
+<div id="atasContainer">
+  <p class="no-data">Carregando atas...</p>
+</div>
 
 <script>
-  const atas = [
-    {
-      painel: "KPI Gestão Vendas",
-      data: "2025-06-11T14:00:00",
-      meio: "Microsoft Teams",
-      participantes: ["Nome 1", "Nome 2"],
-      topicos: [
-        {
-          titulo: "Apresentação do Painel KPI Gestão Vendas",
-          responsavel: "Carlos",
-          pontos: [
-            "Complicações no modelo do painel, tais como Dataflows inoperantes.",
-            "Tabelas com origens desconhecidas."
-          ]
-        },
-        {
-          titulo: "Estudo a Ser Realizado em Torno do Painel",
-          responsavel: "Carlos",
-          pontos: [
-            "Análise detalhada do painel para compreensão do funcionamento.",
-            "Estrutura do painel e revisão dos DataFlows.",
-            "Elementos fora do padrão."
-          ]
-        }
-      ],
-      acoes: [
-        {
-          acao: "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas",
-          objetivo: "Investigar a estrutura e inconsistências do painel.\nVerificar Dataflows e sua configuração.\nIdentificar origens das tabelas.\nApresentar sugestões de melhorias.",
-          responsavel: "Nome do Responsável",
-          tempo: "4 horas",
-          prazo: "2025-06-11T18:00:00",
-          retorno: "Carlos"
-        }
-      ],
-      observacoes: "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
-    },
-    {
-      painel: "Painel Financeiro",
-      data: "2025-06-10T10:00:00",
-      meio: "Google Meet",
-      participantes: ["Ana", "Bruno"],
-      topicos: [
-        {
-          titulo: "Revisão dos indicadores financeiros",
-          responsavel: "Ana",
-          pontos: [
-            "Ajustes nos gráficos de receita e despesa.",
-            "Discussão sobre novos benchmarks."
-          ]
-        }
-      ],
-      acoes: [],
-      observacoes: ""
-    }
-  ];
-
   const painelSelect = document.getElementById("painelSelect");
   const atasContainer = document.getElementById("atasContainer");
   const tituloPainel = document.getElementById("tituloPainel");
 
-  const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
-
-  paineisUnicos.forEach(painel => {
-    const option = document.createElement("option");
-    option.value = painel;
-    option.textContent = painel;
-    painelSelect.appendChild(option);
-  });
+  let atas = []; // Variável global para armazenar as atas carregadas
 
   function formatarData(dateStr) {
     const dt = new Date(dateStr);
@@ -206,7 +158,7 @@
     atasContainer.innerHTML = "";
 
     if (atasFiltradas.length === 0) {
-      atasContainer.innerHTML = <p class="no-data">Nenhuma ata encontrada para este painel.</p>;
+      atasContainer.innerHTML = '<p class="no-data">Nenhuma ata encontrada para este painel.</p>';
       return;
     }
 
@@ -214,7 +166,7 @@
       const divAta = document.createElement("div");
       divAta.style.marginBottom = "40px";
 
-      divAta.innerHTML = 
+      divAta.innerHTML = `
         <table>
           <thead>
             <tr><th colspan="2">Detalhes da Reunião</th></tr>
@@ -232,11 +184,11 @@
           </thead>
           <tbody>
             ${ata.topicos.map(t => 
-              <tr>
+              `<tr>
                 <td>${t.titulo}</td>
                 <td>${t.responsavel}</td>
-                <td><ul>${t.pontos.map(p => <li>${p}</li>).join("")}</ul></td>
-              </tr>
+                <td><ul>${t.pontos.map(p => `<li>${p}</li>`).join("")}</ul></td>
+              </tr>`
             ).join("")}
           </tbody>
         </table>
@@ -246,36 +198,68 @@
             <tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Estimativa de Tempo</th><th>Prazo de Conclusão</th><th>Retorno para</th></tr>
           </thead>
           <tbody>
-            ${ata.acoes.map(a => 
-              <tr>
+            ${ata.acoes.length > 0 ? ata.acoes.map(a => 
+              `<tr>
                 <td>${a.acao}</td>
                 <td style="white-space: pre-line;">${a.objetivo}</td>
                 <td>${a.responsavel}</td>
                 <td>${a.tempo}</td>
                 <td>${formatarData(a.prazo)}</td>
                 <td>${a.retorno}</td>
-              </tr>
-            ).join("") || <tr><td colspan="6" style="text-align:center;">Nenhuma ação registrada.</td></tr>}
+              </tr>`
+            ).join("") : '<tr><td colspan="6" style="text-align:center;">Nenhuma ação registrada.</td></tr>'}
           </tbody>
         </table>
 
         <p><strong>Observações:</strong> ${ata.observacoes || "Nenhuma observação."}</p>
-      ;
+      `;
 
       atasContainer.appendChild(divAta);
     });
   }
 
+  // Função para carregar os dados do arquivo JSON
+  async function carregarAtas() {
+    try {
+      const response = await fetch('atas.json');
+      if (!response.ok) {
+        throw new Error('Falha ao carregar o arquivo de atas');
+      }
+      atas = await response.json();
+      
+      // Atualizar o seletor de painéis
+      const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
+      
+      painelSelect.innerHTML = '';
+      if (paineisUnicos.length > 0) {
+        paineisUnicos.forEach(painel => {
+          const option = document.createElement("option");
+          option.value = painel;
+          option.textContent = painel;
+          painelSelect.appendChild(option);
+        });
+        
+        // Selecionar o primeiro painel por padrão
+        painelSelect.value = paineisUnicos[0];
+        renderizarAtas(paineisUnicos[0]);
+      } else {
+        painelSelect.innerHTML = '<option value="" disabled selected>Nenhum painel disponível</option>';
+        atasContainer.innerHTML = '<p class="no-data">Nenhuma ata disponível.</p>';
+      }
+    } catch (error) {
+      console.error('Erro ao carregar atas:', error);
+      atasContainer.innerHTML = `<p class="no-data">Erro ao carregar as atas: ${error.message}</p>`;
+      painelSelect.innerHTML = '<option value="" disabled selected>Erro ao carregar</option>';
+    }
+  }
+
+  // Adicionar listener para mudanças no seletor
   painelSelect.addEventListener("change", (e) => {
     renderizarAtas(e.target.value);
   });
 
-  if (paineisUnicos.length > 0) {
-    painelSelect.value = paineisUnicos[0];
-    renderizarAtas(paineisUnicos[0]);
-  } else {
-    atasContainer.innerHTML = "<p class='no-data'>Nenhum painel disponível.</p>";
-  }
+  // Carregar os dados quando a página for carregada
+  document.addEventListener('DOMContentLoaded', carregarAtas);
 </script>
 
 </body>
