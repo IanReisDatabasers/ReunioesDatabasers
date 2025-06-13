@@ -1,0 +1,21 @@
+[
+  {
+    "painel": "KPI Gestão Vendas",
+    "data": "2025-06-11T14:00:00",
+    "meio": "Microsoft Teams",
+    "participantes": ["Nome 1", "Nome 2"],
+    "topicos": [
+      {
+        "titulo": "Apresentação do Painel KPI Gestão Vendas",
+        "responsavel": "Carlos",
+        "pontos": [
+          "Complicações no modelo do painel, tais como Dataflows inoperantes.",
+          "Tabelas com origens desconhecidas."
+        ]
+      }
+    ],
+    "acoes": [],
+    "observacoes": "Alguma observação."
+  }
+  // outras atas...
+]
