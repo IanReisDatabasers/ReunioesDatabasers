@@ -1,130 +1,266 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Atas Detalhadas</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 2rem; background: #fafafa; color: #222; }
-  h1, h2, h3 { color: #2a7f62; }
-  section { background: white; padding: 1rem 2rem; margin-bottom: 1.5rem; border-radius: 5px; box-shadow: 0 0 8px #ddd;}
-  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-  th { background-color: #2a7f62; color: white; }
-  ul { margin: 0; padding-left: 1.2rem; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atas de Reunião - Databasers</title>
+  <style>
+    body {
+      background-color: #073763; /* azul escuro próximo do logo */
+      color: #e0e7f8; /* azul claro para texto */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header img {
+      max-width: 180px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      color: #a7c0e8; /* azul mais claro para destaque */
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px #001d3d;
+    }
+
+    label, select {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      display: block;
+      color: #c2d3f7;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #1a2e5a;
+      color: #e0e7f8;
+      width: 250px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background-color: #1a2e5a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 15px #001d3d;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #073763;
+    }
+
+    th {
+      background-color: #234a9e;
+      font-weight: bold;
+      text-align: left;
+      color: #d6e4ff;
+    }
+
+    tr:hover {
+      background-color: #2c558f;
+    }
+
+    .no-data {
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #c2d3f7;
+    }
+
+  </style>
 </head>
 <body>
 
-<h1>Atas de Reuniões</h1>
+<header>
+  <img src="https://raw.githubusercontent.com/seu-usuario/seu-repositorio/main/756b2d32-c8a8-4680-9d31-36d34d2f552a.png" alt="Databasers Logo" />
+  <h1>Atas de Reunião - Painel: <span id="tituloPainel"></span></h1>
+</header>
+
+<label for="painelSelect">Selecione o Painel:</label>
+<select id="painelSelect">
+  <!-- Opções serão preenchidas pelo JS -->
+</select>
 
 <div id="atasContainer"></div>
 
 <script>
-const atas = [
-  {
-    data: "2025-06-11T14:00",
-    painel: "KPI Gestão Vendas",
-    meio: "Microsoft Teams",
-    participantes: ["Nome 1", "Nome 2"],
-    topicos: [
-      {
-        titulo: "Apresentação do Painel KPI Gestão Vendas",
-        responsavel: "Carlos",
-        pontos: [
-          "Complicações no modelo do painel, tais como Dataflows inoperantes.",
-          "Tabelas com origens desconhecidas."
-        ]
-      },
-      {
-        titulo: "Estudo a Ser Realizado em Torno do Painel",
-        responsavel: "Carlos",
-        pontos: [
-          "Análise detalhada do painel para compreensão do funcionamento.",
-          "Estrutura do painel e revisão dos DataFlows.",
-          "Elementos fora do padrão."
-        ]
-      }
-    ],
-    proximas_acoes: [
-      {
-        acao: "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas",
-        objetivo: `Investigar a estrutura e inconsistências do painel.
-Verificar Dataflows e sua configuração.
-Identificar origens das tabelas.
-Apresentar sugestões de melhorias.`,
-        responsavel: "Nome do Responsável",
-        estimativa_tempo: "4 horas",
-        prazo_conclusao: "2025-06-11T18:00",
-        retorno_para: "Carlos"
-      }
-    ],
-    observacoes: "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
-  }
-];
+  // Dados de exemplo — você pode substituir/atualizar conforme necessário
+  const atas = [
+    {
+      painel: "KPI Gestão Vendas",
+      data: "2025-06-11T14:00:00",
+      meio: "Microsoft Teams",
+      participantes: ["Nome 1", "Nome 2"],
+      topicos: [
+        {
+          titulo: "Apresentação do Painel KPI Gestão Vendas",
+          responsavel: "Carlos",
+          pontos: [
+            "Complicações no modelo do painel, tais como Dataflows inoperantes.",
+            "Tabelas com origens desconhecidas."
+          ]
+        },
+        {
+          titulo: "Estudo a Ser Realizado em Torno do Painel",
+          responsavel: "Carlos",
+          pontos: [
+            "Análise detalhada do painel para compreensão do funcionamento.",
+            "Estrutura do painel e revisão dos DataFlows.",
+            "Elementos fora do padrão."
+          ]
+        }
+      ],
+      acoes: [
+        {
+          acao: "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas",
+          objetivo: "Investigar a estrutura e inconsistências do painel.\nVerificar Dataflows e sua configuração.\nIdentificar origens das tabelas.\nApresentar sugestões de melhorias.",
+          responsavel: "Nome do Responsável",
+          tempo: "4 horas",
+          prazo: "2025-06-11T18:00:00",
+          retorno: "Carlos"
+        }
+      ],
+      observacoes: "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
+    },
 
-// Função para formatar data e hora
-function formatarDataHora(isoStr) {
-  const d = new Date(isoStr);
-  return d.toLocaleDateString('pt-BR') + ", " + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-}
+    // Exemplo de outra ata para teste do filtro
+    {
+      painel: "Painel Financeiro",
+      data: "2025-06-10T10:00:00",
+      meio: "Google Meet",
+      participantes: ["Ana", "Bruno"],
+      topicos: [
+        {
+          titulo: "Revisão dos indicadores financeiros",
+          responsavel: "Ana",
+          pontos: [
+            "Ajustes nos gráficos de receita e despesa.",
+            "Discussão sobre novos benchmarks."
+          ]
+        }
+      ],
+      acoes: [],
+      observacoes: ""
+    }
+  ];
 
-function renderizarAtas() {
-  const container = document.getElementById('atasContainer');
-  container.innerHTML = '';
+  const painelSelect = document.getElementById("painelSelect");
+  const atasContainer = document.getElementById("atasContainer");
+  const tituloPainel = document.getElementById("tituloPainel");
 
-  atas.forEach(ata => {
-    const sec = document.createElement('section');
+  // Extrair paineis únicos para dropdown
+  const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
 
-    sec.innerHTML = `
-      <h2>${ata.painel}</h2>
-      <p><strong>Data e Hora:</strong> ${formatarDataHora(ata.data)}</p>
-      <p><strong>Meio:</strong> ${ata.meio}</p>
-      <p><strong>Participantes:</strong> ${ata.participantes.join(', ')}</p>
-
-      <h3>Tópicos Abordados</h3>
-      ${ata.topicos.map(t => `
-        <div style="margin-bottom:1rem;">
-          <strong>${t.titulo}</strong> (Responsável: ${t.responsavel})
-          <ul>${t.pontos.map(p => `<li>${p}</li>`).join('')}</ul>
-        </div>
-      `).join('')}
-
-      <h3>Próximas Ações</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Ação</th>
-            <th>Objetivo</th>
-            <th>Responsável</th>
-            <th>Estimativa de Tempo</th>
-            <th>Prazo de Conclusão</th>
-            <th>Retorno para</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${ata.proximas_acoes.map(a => `
-            <tr>
-              <td>${a.acao}</td>
-              <td style="white-space: pre-wrap;">${a.objetivo}</td>
-              <td>${a.responsavel}</td>
-              <td>${a.estimativa_tempo}</td>
-              <td>${formatarDataHora(a.prazo_conclusao)}</td>
-              <td>${a.retorno_para}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-
-      <h3>Observações</h3>
-      <p>${ata.observacoes}</p>
-    `;
-
-    container.appendChild(sec);
+  // Preenche o select com opções
+  paineisUnicos.forEach(painel => {
+    const option = document.createElement("option");
+    option.value = painel;
+    option.textContent = painel;
+    painelSelect.appendChild(option);
   });
-}
 
-renderizarAtas();
+  // Função para formatar data em dd/mm/yyyy HH:mm
+  function formatarData(dateStr) {
+    const dt = new Date(dateStr);
+    return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  }
+
+  // Função para renderizar as atas filtradas
+  function renderizarAtas(painel) {
+    tituloPainel.textContent = painel;
+    const atasFiltradas = atas
+      .filter(ata => ata.painel === painel)
+      .sort((a,b) => new Date(b.data) - new Date(a.data));
+
+    atasContainer.innerHTML = "";
+
+    if (atasFiltradas.length === 0) {
+      atasContainer.innerHTML = `<p class="no-data">Nenhuma ata encontrada para este painel.</p>`;
+      return;
+    }
+
+    atasFiltradas.forEach(ata => {
+      const divAta = document.createElement("div");
+      divAta.style.marginBottom = "40px";
+
+      divAta.innerHTML = `
+        <table>
+          <thead>
+            <tr><th colspan="2">Detalhes da Reunião</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Data e Hora:</strong></td><td>${formatarData(ata.data)}</td></tr>
+            <tr><td><strong>Meio:</strong></td><td>${ata.meio}</td></tr>
+            <tr><td><strong>Participantes:</strong></td><td>${ata.participantes.join(", ")}</td></tr>
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr><th>Tópico</th><th>Responsável</th><th>Pontos Tratados</th></tr>
+          </thead>
+          <tbody>
+            ${ata.topicos.map(t => `
+              <tr>
+                <td>${t.titulo}</td>
+                <td>${t.responsavel}</td>
+                <td><ul>${t.pontos.map(p => `<li>${p}</li>`).join("")}</ul></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+
+        <table>
+          <thead>
+            <tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Estimativa de Tempo</th><th>Prazo de Conclusão</th><th>Retorno para</th></tr>
+          </thead>
+          <tbody>
+            ${ata.acoes.map(a => `
+              <tr>
+                <td>${a.acao}</td>
+                <td style="white-space: pre-line;">${a.objetivo}</td>
+                <td>${a.responsavel}</td>
+                <td>${a.tempo}</td>
+                <td>${formatarData(a.prazo)}</td>
+                <td>${a.retorno}</td>
+              </tr>
+            `).join("") || `<tr><td colspan="6" style="text-align:center;">Nenhuma ação registrada.</td></tr>`}
+          </tbody>
+        </table>
+
+        <p><strong>Observações:</strong> ${ata.observacoes || "Nenhuma observação."}</p>
+      `;
+
+      atasContainer.appendChild(divAta);
+    });
+  }
+
+  // Evento para mudança no dropdown
+  painelSelect.addEventListener("change", (e) => {
+    renderizarAtas(e.target.value);
+  });
+
+  // Carrega o primeiro painel por padrão
+  if (paineisUnicos.length > 0) {
+    painelSelect.value = paineisUnicos[0];
+    renderizarAtas(paineisUnicos[0]);
+  } else {
+    atasContainer.innerHTML = "<p class='no-data'>Nenhum painel disponível.</p>";
+  }
 </script>
 
 </body>
