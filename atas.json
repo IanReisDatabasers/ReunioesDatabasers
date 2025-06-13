@@ -12,10 +12,45 @@
           "Complicações no modelo do painel, tais como Dataflows inoperantes.",
           "Tabelas com origens desconhecidas."
         ]
+      },
+      {
+        "titulo": "Estudo a Ser Realizado em Torno do Painel",
+        "responsavel": "Carlos",
+        "pontos": [
+          "Análise detalhada do painel para compreensão do funcionamento.",
+          "Estrutura do painel e revisão dos DataFlows.",
+          "Elementos fora do padrão."
+        ]
+      }
+    ],
+    "acoes": [
+      {
+        "acao": "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas",
+        "objetivo": "Investigar a estrutura e inconsistências do painel.\nVerificar Dataflows e sua configuração.\nIdentificar origens das tabelas.\nApresentar sugestões de melhorias.",
+        "responsavel": "Nome do Responsável",
+        "tempo": "4 horas",
+        "prazo": "2025-06-11T18:00:00",
+        "retorno": "Carlos"
+      }
+    ],
+    "observacoes": "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
+  },
+  {
+    "painel": "Painel Financeiro",
+    "data": "2025-06-10T10:00:00",
+    "meio": "Google Meet",
+    "participantes": ["Ana", "Bruno"],
+    "topicos": [
+      {
+        "titulo": "Revisão dos indicadores financeiros",
+        "responsavel": "Ana",
+        "pontos": [
+          "Ajustes nos gráficos de receita e despesa.",
+          "Discussão sobre novos benchmarks."
+        ]
       }
     ],
     "acoes": [],
-    "observacoes": "Alguma observação."
+    "observacoes": ""
   }
-
 ]
