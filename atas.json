@@ -52,5 +52,41 @@
     ],
     "acoes": [],
     "observacoes": ""
+  },
+{
+    "painel": "KPI Gestão Vendas",
+    "data": "2025-06-11T14:00:00",
+    "meio": "Microsoft Teams",
+    "participantes": ["Nome 1", "Nome 2"],
+    "topicos": [
+      {
+        "titulo": "Apresentação do Painel KPI Gestão Vendas",
+        "responsavel": "Carlos",
+        "pontos": [
+          "Complicações no modelo do painel, tais como Dataflows inoperantes.",
+          "Tabelas com origens desconhecidas."
+        ]
+      },
+      {
+        "titulo": "Estudo a Ser Realizado em Torno do Painel",
+        "responsavel": "Carlos",
+        "pontos": [
+          "Análise detalhada do painel para compreensão do funcionamento. 2",
+          "Estrutura do painel e revisão dos DataFlows.",
+          "Elementos fora do padrão."
+        ]
+      }
+    ],
+    "acoes": [
+      {
+        "acao": "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas 2",
+        "objetivo": "Investigar a estrutura e inconsistências do painel.\nVerificar Dataflows e sua configuração.\nIdentificar origens das tabelas.\nApresentar sugestões de melhorias.",
+        "responsavel": "Nome do Responsável",
+        "tempo": "4 horas",
+        "prazo": "2025-06-11T18:00:00",
+        "retorno": "Carlos"
+      }
+    ],
+    "observacoes": "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
   }
 ]
