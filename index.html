@@ -6,17 +6,31 @@
   <title>Atas de Reunião - Databasers</title>
   <style>
     body {
-      background-color: #073763; /* azul escuro próximo do logo */
-      color: #e0e7f8; /* azul claro para texto */
+      color: #e0e7f8;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
       min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      object-fit: cover;
+      opacity: 0.3;
     }
 
     header {
       text-align: center;
       margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
     }
 
     header img {
@@ -25,7 +39,7 @@
     }
 
     h1 {
-      color: #a7c0e8; /* azul mais claro para destaque */
+      color: #a7c0e8;
       font-size: 2.5em;
       margin-bottom: 10px;
       font-weight: bold;
@@ -53,7 +67,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
-      background-color: #1a2e5a;
+      background-color: rgba(26, 46, 90, 0.8);
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 0 15px #001d3d;
@@ -81,15 +95,25 @@
       color: #c2d3f7;
     }
 
+    #atasContainer {
+      position: relative;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
 
+<video autoplay muted loop id="bgVideo" class="video-background">
+  <source src="background.mp4" type="video/mp4">
+  Seu navegador não suporta vídeos HTML5.
+</video>
+
 <header>
-  <img src="https://github.com/IanReisDatabasers/ReunioesDatabasers/blob/main/src/Databasers%20Logo.png" alt="Databasers Logo.png" />
+  <img src="logotipoDatabasersWhite.svg" alt="Databasers Logo" />
   <h1>Atas de Reunião - Painel: <span id="tituloPainel"></span></h1>
 </header>
 
+<!-- Restante do seu código permanece igual -->
 <label for="painelSelect">Selecione o Painel:</label>
 <select id="painelSelect">
   <!-- Opções serão preenchidas pelo JS -->
@@ -98,7 +122,7 @@
 <div id="atasContainer"></div>
 
 <script>
-  // Dados de exemplo — você pode substituir/atualizar conforme necessário
+  // Seu JavaScript existente permanece igual
   const atas = [
     {
       painel: "KPI Gestão Vendas",
@@ -136,8 +160,6 @@
       ],
       observacoes: "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
     },
-
-    // Exemplo de outra ata para teste do filtro
     {
       painel: "Painel Financeiro",
       data: "2025-06-10T10:00:00",
@@ -162,10 +184,8 @@
   const atasContainer = document.getElementById("atasContainer");
   const tituloPainel = document.getElementById("tituloPainel");
 
-  // Extrair paineis únicos para dropdown
   const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
 
-  // Preenche o select com opções
   paineisUnicos.forEach(painel => {
     const option = document.createElement("option");
     option.value = painel;
@@ -173,13 +193,11 @@
     painelSelect.appendChild(option);
   });
 
-  // Função para formatar data em dd/mm/yyyy HH:mm
   function formatarData(dateStr) {
     const dt = new Date(dateStr);
     return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   }
 
-  // Função para renderizar as atas filtradas
   function renderizarAtas(painel) {
     tituloPainel.textContent = painel;
     const atasFiltradas = atas
@@ -249,12 +267,10 @@
     });
   }
 
-  // Evento para mudança no dropdown
   painelSelect.addEventListener("change", (e) => {
     renderizarAtas(e.target.value);
   });
 
-  // Carrega o primeiro painel por padrão
   if (paineisUnicos.length > 0) {
     painelSelect.value = paineisUnicos[0];
     renderizarAtas(paineisUnicos[0]);
