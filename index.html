@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Atas Detalhadas</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 2rem; background: #fafafa; color: #222; }
+  h1, h2, h3 { color: #2a7f62; }
+  section { background: white; padding: 1rem 2rem; margin-bottom: 1.5rem; border-radius: 5px; box-shadow: 0 0 8px #ddd;}
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+  th { background-color: #2a7f62; color: white; }
+  ul { margin: 0; padding-left: 1.2rem; }
+</style>
+</head>
+<body>
+
+<h1>Atas de Reuniões</h1>
+
+<div id="atasContainer"></div>
+
+<script>
+const atas = [
+  {
+    data: "2025-06-11T14:00",
+    painel: "KPI Gestão Vendas",
+    meio: "Microsoft Teams",
+    participantes: ["Nome 1", "Nome 2"],
+    topicos: [
+      {
+        titulo: "Apresentação do Painel KPI Gestão Vendas",
+        responsavel: "Carlos",
+        pontos: [
+          "Complicações no modelo do painel, tais como Dataflows inoperantes.",
+          "Tabelas com origens desconhecidas."
+        ]
+      },
+      {
+        titulo: "Estudo a Ser Realizado em Torno do Painel",
+        responsavel: "Carlos",
+        pontos: [
+          "Análise detalhada do painel para compreensão do funcionamento.",
+          "Estrutura do painel e revisão dos DataFlows.",
+          "Elementos fora do padrão."
+        ]
+      }
+    ],
+    proximas_acoes: [
+      {
+        acao: "Pesquisa sobre o Funcionamento do Painel KPI Gestão Vendas",
+        objetivo: `Investigar a estrutura e inconsistências do painel.
+Verificar Dataflows e sua configuração.
+Identificar origens das tabelas.
+Apresentar sugestões de melhorias.`,
+        responsavel: "Nome do Responsável",
+        estimativa_tempo: "4 horas",
+        prazo_conclusao: "2025-06-11T18:00",
+        retorno_para: "Carlos"
+      }
+    ],
+    observacoes: "Caso algo esteja faltando nesta ata, por favor, entrar em contato para complemento."
+  }
+];
+
+// Função para formatar data e hora
+function formatarDataHora(isoStr) {
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('pt-BR') + ", " + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+}
+
+function renderizarAtas() {
+  const container = document.getElementById('atasContainer');
+  container.innerHTML = '';
+
+  atas.forEach(ata => {
+    const sec = document.createElement('section');
+
+    sec.innerHTML = `
+      <h2>${ata.painel}</h2>
+      <p><strong>Data e Hora:</strong> ${formatarDataHora(ata.data)}</p>
+      <p><strong>Meio:</strong> ${ata.meio}</p>
+      <p><strong>Participantes:</strong> ${ata.participantes.join(', ')}</p>
+
+      <h3>Tópicos Abordados</h3>
+      ${ata.topicos.map(t => `
+        <div style="margin-bottom:1rem;">
+          <strong>${t.titulo}</strong> (Responsável: ${t.responsavel})
+          <ul>${t.pontos.map(p => `<li>${p}</li>`).join('')}</ul>
+        </div>
+      `).join('')}
+
+      <h3>Próximas Ações</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Ação</th>
+            <th>Objetivo</th>
+            <th>Responsável</th>
+            <th>Estimativa de Tempo</th>
+            <th>Prazo de Conclusão</th>
+            <th>Retorno para</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ata.proximas_acoes.map(a => `
+            <tr>
+              <td>${a.acao}</td>
+              <td style="white-space: pre-wrap;">${a.objetivo}</td>
+              <td>${a.responsavel}</td>
+              <td>${a.estimativa_tempo}</td>
+              <td>${formatarDataHora(a.prazo_conclusao)}</td>
+              <td>${a.retorno_para}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <h3>Observações</h3>
+      <p>${ata.observacoes}</p>
+    `;
+
+    container.appendChild(sec);
+  });
+}
+
+renderizarAtas();
+</script>
+
+</body>
+</html>
