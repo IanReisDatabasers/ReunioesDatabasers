@@ -255,37 +255,40 @@
     });
   }
 
-  function gerarRelatorioTexto(ata) {
-    let texto = `Painel: ${ata.painel}
-Data e Hora: ${formatarData(ata.data)}
-Meio: ${ata.meio}
-Participantes: ${ata.participantes.join(", ")}
+function gerarRelatorioTexto(ata) {
+  const quebra = "\n";
+  let texto = `Painel: ${ata.painel}\n`;
+  texto += `Data e Hora: ${formatarData(ata.data)}\n`;
+  texto += `Meio: ${ata.meio}\n`;
+  texto += `Participantes: ${ata.participantes.join(", ")}\n`;
 
-Tópicos:\n`;
-    ata.topicos.forEach(t => {
-      texto += `- ${t.titulo} (Responsável: ${t.responsavel})\n`;
-      t.pontos.forEach(p => {
-        texto += `   • ${p}\n`;
-      });
+  texto += `${quebra.repeat(2)}TÓPICOS:${quebra}`;
+  ata.topicos.forEach((t, i) => {
+    texto += `${i + 1}. ${t.titulo} (Responsável: ${t.responsavel})${quebra}`;
+    t.pontos.forEach(p => {
+      texto += `   • ${p}${quebra}`;
     });
+    texto += quebra; // espaço extra entre os tópicos
+  });
 
-    texto += `\nAções:\n`;
-    if (ata.acoes.length > 0) {
-      ata.acoes.forEach(a => {
-        texto += `- ${a.acao}
-  Objetivo: ${a.objetivo}
-  Responsável: ${a.responsavel}
-  Tempo estimado: ${a.tempo}
-  Prazo: ${formatarData(a.prazo)}
-  Retorno para: ${a.retorno}\n`;
-      });
-    } else {
-      texto += "Nenhuma ação registrada.\n";
-    }
-
-    texto += `\nObservações: ${ata.observacoes || "Nenhuma observação."}`;
-    return texto;
+  texto += `AÇÕES:${quebra}`;
+  if (ata.acoes.length > 0) {
+    ata.acoes.forEach((a, i) => {
+      texto += `${i + 1}. ${a.acao}${quebra}`;
+      texto += `   Objetivo: ${a.objetivo.replace(/\n/g, "\n             ")}${quebra}`;
+      texto += `   Responsável: ${a.responsavel}${quebra}`;
+      texto += `   Tempo estimado: ${a.tempo}${quebra}`;
+      texto += `   Prazo: ${formatarData(a.prazo)}${quebra}`;
+      texto += `   Retorno para: ${a.retorno}${quebra.repeat(2)}`;
+    });
+  } else {
+    texto += "Nenhuma ação registrada.\n\n";
   }
+
+  texto += `OBSERVAÇÕES:${quebra}${ata.observacoes || "Nenhuma observação."}${quebra}`;
+  return texto;
+}
+
 
   async function carregarAtas() {
     try {
