@@ -39,7 +39,7 @@
     }
 
     h1 {
-      color: #234a9e; /* azul mais escuro */
+      color: #234a9e;
       font-size: 2.5em;
       margin-bottom: 10px;
       font-weight: bold;
@@ -50,7 +50,7 @@
       font-size: 1.2em;
       margin-bottom: 20px;
       display: block;
-      color: #234a9e; /* azul mais escuro */
+      color: #234a9e;
       font-weight: bold;
     }
 
@@ -115,6 +115,16 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    .btn-download {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #234a9e;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -137,16 +147,47 @@
   <p class="no-data">Carregando atas...</p>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
   const painelSelect = document.getElementById("painelSelect");
   const atasContainer = document.getElementById("atasContainer");
   const tituloPainel = document.getElementById("tituloPainel");
 
-  let atas = []; // Variável global para armazenar as atas carregadas
+  let atas = [];
 
   function formatarData(dateStr) {
     const dt = new Date(dateStr);
     return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  }
+
+  function gerarRelatorioTexto(ata) {
+    let texto = `ATA DE REUNIÃO - ${ata.painel}\n`;
+    texto += `Data e Hora: ${formatarData(ata.data)}\n`;
+    texto += `Meio: ${ata.meio}\n`;
+    texto += `Participantes: ${ata.participantes.join(", ")}\n\n`;
+
+    texto += `TÓPICOS DISCUTIDOS:\n`;
+    ata.topicos.forEach((topico, i) => {
+      texto += `  ${i+1}. ${topico.titulo} (Responsável: ${topico.responsavel})\n`;
+      topico.pontos.forEach(p => texto += `    - ${p}\n`);
+    });
+
+    texto += `\nAÇÕES DEFINIDAS:\n`;
+    if (ata.acoes.length > 0) {
+      ata.acoes.forEach((acao, i) => {
+        texto += `  ${i+1}. ${acao.acao}\n`;
+        texto += `     Objetivo: ${acao.objetivo.replace(/\n/g, " ")}\n`;
+        texto += `     Responsável: ${acao.responsavel}\n`;
+        texto += `     Tempo Estimado: ${acao.tempo}\n`;
+        texto += `     Prazo: ${formatarData(acao.prazo)}\n`;
+        texto += `     Retorno para: ${acao.retorno}\n\n`;
+      });
+    } else {
+      texto += "  Nenhuma ação registrada.\n";
+    }
+
+    texto += `\nObservações:\n${ata.observacoes || "Nenhuma observação."}\n`;
+    return texto;
   }
 
   function renderizarAtas(painel) {
@@ -168,9 +209,7 @@
 
       divAta.innerHTML = `
         <table>
-          <thead>
-            <tr><th colspan="2">Detalhes da Reunião</th></tr>
-          </thead>
+          <thead><tr><th colspan="2">Detalhes da Reunião</th></tr></thead>
           <tbody>
             <tr><td><strong>Data e Hora:</strong></td><td>${formatarData(ata.data)}</td></tr>
             <tr><td><strong>Meio:</strong></td><td>${ata.meio}</td></tr>
@@ -179,24 +218,19 @@
         </table>
 
         <table>
-          <thead>
-            <tr><th>Tópico</th><th>Responsável</th><th>Pontos Tratados</th></tr>
-          </thead>
+          <thead><tr><th>Tópico</th><th>Responsável</th><th>Pontos Tratados</th></tr></thead>
           <tbody>
             ${ata.topicos.map(t => 
               `<tr>
                 <td>${t.titulo}</td>
                 <td>${t.responsavel}</td>
                 <td><ul>${t.pontos.map(p => `<li>${p}</li>`).join("")}</ul></td>
-              </tr>`
-            ).join("")}
+              </tr>`).join("")}
           </tbody>
         </table>
 
         <table>
-          <thead>
-            <tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Estimativa de Tempo</th><th>Prazo de Conclusão</th><th>Retorno para</th></tr>
-          </thead>
+          <thead><tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Tempo Estimado</th><th>Prazo</th><th>Retorno</th></tr></thead>
           <tbody>
             ${ata.acoes.length > 0 ? ata.acoes.map(a => 
               `<tr>
@@ -206,31 +240,45 @@
                 <td>${a.tempo}</td>
                 <td>${formatarData(a.prazo)}</td>
                 <td>${a.retorno}</td>
-              </tr>`
-            ).join("") : '<tr><td colspan="6" style="text-align:center;">Nenhuma ação registrada.</td></tr>'}
+              </tr>`).join("") : '<tr><td colspan="6" style="text-align:center;">Nenhuma ação registrada.</td></tr>'}
           </tbody>
         </table>
 
         <p><strong>Observações:</strong> ${ata.observacoes || "Nenhuma observação."}</p>
       `;
 
+      // Botão de download em PDF
+      const btnPDF = document.createElement("button");
+      btnPDF.textContent = "Baixar PDF";
+      btnPDF.className = "btn-download";
+      btnPDF.addEventListener("click", async () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        const texto = gerarRelatorioTexto(ata);
+        const linhas = doc.splitTextToSize(texto, 180);
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(12);
+        doc.text(linhas, 15, 20);
+
+        const nomeArquivo = `Ata_${ata.painel.replace(/\s+/g, "_")}_${new Date(ata.data).toISOString().split("T")[0]}.pdf`;
+        doc.save(nomeArquivo);
+      });
+
+      divAta.appendChild(btnPDF);
       atasContainer.appendChild(divAta);
     });
   }
 
-  // Função para carregar os dados do arquivo JSON
   async function carregarAtas() {
     try {
       const response = await fetch('atas.json');
-      if (!response.ok) {
-        throw new Error('Falha ao carregar o arquivo de atas');
-      }
+      if (!response.ok) throw new Error('Falha ao carregar o arquivo de atas');
       atas = await response.json();
-      
-      // Atualizar o seletor de painéis
+
       const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
-      
       painelSelect.innerHTML = '';
+
       if (paineisUnicos.length > 0) {
         paineisUnicos.forEach(painel => {
           const option = document.createElement("option");
@@ -238,8 +286,7 @@
           option.textContent = painel;
           painelSelect.appendChild(option);
         });
-        
-        // Selecionar o primeiro painel por padrão
+
         painelSelect.value = paineisUnicos[0];
         renderizarAtas(paineisUnicos[0]);
       } else {
@@ -253,12 +300,7 @@
     }
   }
 
-  // Adicionar listener para mudanças no seletor
-  painelSelect.addEventListener("change", (e) => {
-    renderizarAtas(e.target.value);
-  });
-
-  // Carregar os dados quando a página for carregada
+  painelSelect.addEventListener("change", (e) => renderizarAtas(e.target.value));
   document.addEventListener('DOMContentLoaded', carregarAtas);
 </script>
 
