@@ -116,12 +116,12 @@
       to { transform: rotate(360deg); }
     }
 
-    .btn-download {
+    button {
       margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
+      padding: 10px 20px;
       background-color: #234a9e;
       color: #fff;
+      border: none;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -147,12 +147,13 @@
   <p class="no-data">Carregando atas...</p>
 </div>
 
+<!-- jsPDF CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
   const painelSelect = document.getElementById("painelSelect");
   const atasContainer = document.getElementById("atasContainer");
   const tituloPainel = document.getElementById("tituloPainel");
-
   let atas = [];
 
   function formatarData(dateStr) {
@@ -160,41 +161,9 @@
     return dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
   }
 
-  function gerarRelatorioTexto(ata) {
-    let texto = `ATA DE REUNIÃO - ${ata.painel}\n`;
-    texto += `Data e Hora: ${formatarData(ata.data)}\n`;
-    texto += `Meio: ${ata.meio}\n`;
-    texto += `Participantes: ${ata.participantes.join(", ")}\n\n`;
-
-    texto += `TÓPICOS DISCUTIDOS:\n`;
-    ata.topicos.forEach((topico, i) => {
-      texto += `  ${i+1}. ${topico.titulo} (Responsável: ${topico.responsavel})\n`;
-      topico.pontos.forEach(p => texto += `    - ${p}\n`);
-    });
-
-    texto += `\nAÇÕES DEFINIDAS:\n`;
-    if (ata.acoes.length > 0) {
-      ata.acoes.forEach((acao, i) => {
-        texto += `  ${i+1}. ${acao.acao}\n`;
-        texto += `     Objetivo: ${acao.objetivo.replace(/\n/g, " ")}\n`;
-        texto += `     Responsável: ${acao.responsavel}\n`;
-        texto += `     Tempo Estimado: ${acao.tempo}\n`;
-        texto += `     Prazo: ${formatarData(acao.prazo)}\n`;
-        texto += `     Retorno para: ${acao.retorno}\n\n`;
-      });
-    } else {
-      texto += "  Nenhuma ação registrada.\n";
-    }
-
-    texto += `\nObservações:\n${ata.observacoes || "Nenhuma observação."}\n`;
-    return texto;
-  }
-
   function renderizarAtas(painel) {
     tituloPainel.textContent = painel;
-    const atasFiltradas = atas
-      .filter(ata => ata.painel === painel)
-      .sort((a,b) => new Date(b.data) - new Date(a.data));
+    const atasFiltradas = atas.filter(ata => ata.painel === painel).sort((a,b) => new Date(b.data) - new Date(a.data));
 
     atasContainer.innerHTML = "";
 
@@ -209,7 +178,9 @@
 
       divAta.innerHTML = `
         <table>
-          <thead><tr><th colspan="2">Detalhes da Reunião</th></tr></thead>
+          <thead>
+            <tr><th colspan="2">Detalhes da Reunião</th></tr>
+          </thead>
           <tbody>
             <tr><td><strong>Data e Hora:</strong></td><td>${formatarData(ata.data)}</td></tr>
             <tr><td><strong>Meio:</strong></td><td>${ata.meio}</td></tr>
@@ -218,7 +189,9 @@
         </table>
 
         <table>
-          <thead><tr><th>Tópico</th><th>Responsável</th><th>Pontos Tratados</th></tr></thead>
+          <thead>
+            <tr><th>Tópico</th><th>Responsável</th><th>Pontos Tratados</th></tr>
+          </thead>
           <tbody>
             ${ata.topicos.map(t => 
               `<tr>
@@ -230,7 +203,9 @@
         </table>
 
         <table>
-          <thead><tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Tempo Estimado</th><th>Prazo</th><th>Retorno</th></tr></thead>
+          <thead>
+            <tr><th>Ação</th><th>Objetivo</th><th>Responsável</th><th>Estimativa de Tempo</th><th>Prazo de Conclusão</th><th>Retorno para</th></tr>
+          </thead>
           <tbody>
             ${ata.acoes.length > 0 ? ata.acoes.map(a => 
               `<tr>
@@ -247,22 +222,32 @@
         <p><strong>Observações:</strong> ${ata.observacoes || "Nenhuma observação."}</p>
       `;
 
-      // Botão de download em PDF
+      // Botão PDF
       const btnPDF = document.createElement("button");
       btnPDF.textContent = "Baixar PDF";
-      btnPDF.className = "btn-download";
       btnPDF.addEventListener("click", async () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        const texto = gerarRelatorioTexto(ata);
-        const linhas = doc.splitTextToSize(texto, 180);
-        doc.setFont("Helvetica", "normal");
-        doc.setFontSize(12);
-        doc.text(linhas, 15, 20);
+        const img = new Image();
+        img.src = 'src/logo.png'; // Substitua por caminho da sua logo em PNG
 
-        const nomeArquivo = `Ata_${ata.painel.replace(/\s+/g, "_")}_${new Date(ata.data).toISOString().split("T")[0]}.pdf`;
-        doc.save(nomeArquivo);
+        img.onload = () => {
+          const imgWidth = 50;
+          const pageWidth = doc.internal.pageSize.getWidth();
+          const centerX = (pageWidth - imgWidth) / 2;
+          doc.addImage(img, 'PNG', centerX, 10, imgWidth, 20);
+
+          doc.setFont("Helvetica", "normal");
+          doc.setFontSize(12);
+
+          const texto = gerarRelatorioTexto(ata);
+          const linhas = doc.splitTextToSize(texto, 180);
+          doc.text(linhas, 15, 40);
+
+          const nomeArquivo = `Ata_${ata.painel.replace(/\s+/g, "_")}_${new Date(ata.data).toISOString().split("T")[0]}.pdf`;
+          doc.save(nomeArquivo);
+        };
       });
 
       divAta.appendChild(btnPDF);
@@ -270,15 +255,45 @@
     });
   }
 
+  function gerarRelatorioTexto(ata) {
+    let texto = `Painel: ${ata.painel}
+Data e Hora: ${formatarData(ata.data)}
+Meio: ${ata.meio}
+Participantes: ${ata.participantes.join(", ")}
+
+Tópicos:\n`;
+    ata.topicos.forEach(t => {
+      texto += `- ${t.titulo} (Responsável: ${t.responsavel})\n`;
+      t.pontos.forEach(p => {
+        texto += `   • ${p}\n`;
+      });
+    });
+
+    texto += `\nAções:\n`;
+    if (ata.acoes.length > 0) {
+      ata.acoes.forEach(a => {
+        texto += `- ${a.acao}
+  Objetivo: ${a.objetivo}
+  Responsável: ${a.responsavel}
+  Tempo estimado: ${a.tempo}
+  Prazo: ${formatarData(a.prazo)}
+  Retorno para: ${a.retorno}\n`;
+      });
+    } else {
+      texto += "Nenhuma ação registrada.\n";
+    }
+
+    texto += `\nObservações: ${ata.observacoes || "Nenhuma observação."}`;
+    return texto;
+  }
+
   async function carregarAtas() {
     try {
       const response = await fetch('atas.json');
       if (!response.ok) throw new Error('Falha ao carregar o arquivo de atas');
       atas = await response.json();
-
       const paineisUnicos = [...new Set(atas.map(ata => ata.painel))].sort();
       painelSelect.innerHTML = '';
-
       if (paineisUnicos.length > 0) {
         paineisUnicos.forEach(painel => {
           const option = document.createElement("option");
@@ -286,7 +301,6 @@
           option.textContent = painel;
           painelSelect.appendChild(option);
         });
-
         painelSelect.value = paineisUnicos[0];
         renderizarAtas(paineisUnicos[0]);
       } else {
@@ -300,7 +314,10 @@
     }
   }
 
-  painelSelect.addEventListener("change", (e) => renderizarAtas(e.target.value));
+  painelSelect.addEventListener("change", (e) => {
+    renderizarAtas(e.target.value);
+  });
+
   document.addEventListener('DOMContentLoaded', carregarAtas);
 </script>
 
